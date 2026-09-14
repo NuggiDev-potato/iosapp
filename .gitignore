@@ -1,0 +1,18 @@
+# Flutter reference clone (source material, keep out of this repo)
+meteorologus/
+
+# Xcode build artifacts
+ios_app/build/
+DerivedData/
+build/
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# macOS
+.DS_Store
+
+# Swift Package Manager
+.swiftpm/

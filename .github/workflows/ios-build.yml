@@ -1,0 +1,60 @@
+name: iOS Build
+
+on:
+  push:
+    paths:
+      - "ios_app/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile Meteorologus.app
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: xcodebuild -version
+
+      - name: Install xcpretty
+        run: gem install xcpretty -N
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios_app/Meteorologus.xcodeproj \
+            -scheme Meteorologus \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty
+
+      - name: Build for device (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project ios_app/Meteorologus.xcodeproj \
+            -scheme Meteorologus \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty
+
+      - name: Upload simulator .app
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meteorologus-simulator
+          path: build/Build/Products/Debug-iphonesimulator/Meteorologus.app
+
+      - name: Upload device .app (unsigned)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meteorologus-device-unsigned
+          path: build/Build/Products/Debug-iphoneos/Meteorologus.app
