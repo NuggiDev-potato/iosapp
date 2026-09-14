@@ -33,7 +33,15 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
-            build | xcpretty
+            build 2>&1 | tee build/sim-raw.log | xcpretty
+          rc=${PIPESTATUS[0]}
+          if [ $rc -ne 0 ]; then
+            echo "===== FULL BUILD ERRORS ====="
+            grep -nE "error:|fatal error:|error\\]|undefined symbol|ld: |Ld .*failed|acterror|actool" build/sim-raw.log | head -80
+            echo "===== LAST 60 LINES ====="
+            tail -60 build/sim-raw.log
+            exit $rc
+          fi
 
       - name: Build for device (unsigned)
         run: |
@@ -45,7 +53,15 @@ jobs:
             -destination 'generic/platform=iOS' \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
-            build | xcpretty
+            build 2>&1 | tee build/device-raw.log | xcpretty
+          rc=${PIPESTATUS[0]}
+          if [ $rc -ne 0 ]; then
+            echo "===== FULL BUILD ERRORS ====="
+            grep -nE "error:|fatal error:|error\\]|undefined symbol|ld: |Ld .*failed|acterror|actool" build/device-raw.log | head -80
+            echo "===== LAST 60 LINES ====="
+            tail -60 build/device-raw.log
+            exit $rc
+          fi
 
       - name: Upload simulator .app
         uses: actions/upload-artifact@v4
