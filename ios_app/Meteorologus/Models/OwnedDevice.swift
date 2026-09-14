@@ -9,6 +9,12 @@ struct OwnedDevice: Identifiable, Equatable {
 
     var id: String { mac }
 
+    init(mac: String, token: String? = nil, claimedAt: Int? = nil) {
+        self.mac = mac
+        self.token = token
+        self.claimedAt = claimedAt
+    }
+
     var formattedMac: String {
         if mac.count == 12 {
             var parts: [String] = []
