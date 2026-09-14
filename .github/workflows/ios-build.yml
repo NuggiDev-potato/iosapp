@@ -26,6 +26,7 @@ jobs:
       - name: Build for iOS Simulator
         run: |
           set -o pipefail
+          mkdir -p build
           xcodebuild \
             -project ios_app/Meteorologus.xcodeproj \
             -scheme Meteorologus \
@@ -46,6 +47,7 @@ jobs:
       - name: Build for device (unsigned)
         run: |
           set -o pipefail
+          mkdir -p build
           xcodebuild \
             -project ios_app/Meteorologus.xcodeproj \
             -scheme Meteorologus \
